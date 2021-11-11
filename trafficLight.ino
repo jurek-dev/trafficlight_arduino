@@ -7,9 +7,11 @@
 #define REDLIGHT        8
 #define YELLOWLIGHT     9
 #define GREENLIGHT      10
+#define PEDBUTTON       11
 
 int valueLDR = 0;
 bool light = false;
+int pressed;
 
 void setup() {
   pinMode(LDR, INPUT);
@@ -18,6 +20,7 @@ void setup() {
   pinMode(REDLIGHT, OUTPUT);
   pinMode(YELLOWLIGHT, OUTPUT);
   pinMode(GREENLIGHT, OUTPUT);
+  pinMode(PEDBUTTON, INPUT);
   Serial.begin(9600);
 }
 
@@ -70,10 +73,19 @@ void stopTrafficLight(){
 void loop() {
   Serial.println(analogRead(LDR));
   delay(1000);
-  if(analogRead(LDR) < 500){
+  
+  pressed = digitalRead(PEDBUTTON);
+  
+  if(pressed == HIGH){
+    goWalker();
+    delay(15 * 1000);
+    stopWalker();
+    delay(2 * 1000);
+  }
+  else if(analogRead(LDR) < 500){
       stopTrafficLight();
   }
-  else {
+  else if(analogRead(LDR) >= 500) {
       stopVehicle(15);
       goVehicle(10);
       waitVehicle(2);
